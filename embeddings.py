@@ -3,8 +3,12 @@ from gensim.models import KeyedVectors
 
 class Embedding(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, matrix=None, index2word=None):
+        self._matrix = matrix
+        self._index2word = index2word
+
+        if matrix is not None:
+            assert index2word is not None
     
     def load_word2vec(self, path, binary=True):
         """Load word2vec model from file
@@ -53,6 +57,11 @@ class Embedding(object):
             raise ImportError('PyTorch not found')
 
         return Embedding.from_pretrained(torch.FloatTensor(self._matrix), freeze=trainable)
+    
+    def create_subset(self, index2word):
+        indices = [self._model.vocab[word].index for word in index2word]
+        matrix = self.matrix[indices]
+        return Embedding(matrix=matrix, index2word=index2word)
 
     @property
     def model(self):
@@ -63,6 +72,11 @@ class Embedding(object):
         """np.ndarray: The embedding matrix of shape vocab_size x embedding dim"""
         return self._matrix
     
+    @property
+    def index2word(self):
+        """list: A list of all words in the vocab"""
+        return self._index2word
+
     @property
     def vocab_size(self):
         """int: Total number of words in the vocabulary"""
