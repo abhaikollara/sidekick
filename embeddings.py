@@ -13,6 +13,8 @@ class Embedding(object):
 
         self._matrix = matrix
         self._index2word = index2word
+        if index2word is not None:
+            self._index_dict = {index2word[i]:i for i in range(len(index2word))}
 
         if matrix is not None:
             if index2word is None:
@@ -29,8 +31,9 @@ class Embedding(object):
         """
     
         self._model = KeyedVectors.load_word2vec_format(path, binary=binary)
-        self._index2word = self._model.index2word
         self._matrix = self._model.syn0
+        self._index2word = self._model.index2word
+        self._index_dict = {self._index2word[i]:i for i in range(len(self._index2word))}
 
     def load_glove(self, path):
         pass
@@ -82,7 +85,7 @@ class Embedding(object):
         Returns:
             An Embedding object containing for the subset of words
         """
-        indices = [self._model.vocab[word].index for word in index2word]
+        indices = [self._index_dict[word] for word in index2word]
         matrix = self.matrix[indices]
         return Embedding(matrix=matrix, index2word=index2word)
 
@@ -109,3 +112,9 @@ class Embedding(object):
     def dim(self):
         """int: The vector size/embedding dimension"""
         return self._matrix.shape[1]
+    
+    def __contains__(self, item):
+        return item in self._index_dict
+
+    def __getitem__(self, idx):
+        return (self.index2word[idx], self.matrix[idx])
