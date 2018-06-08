@@ -4,6 +4,13 @@ from gensim.models import KeyedVectors
 class Embedding(object):
 
     def __init__(self, matrix=None, index2word=None):
+        """Initialize an embedding optionally by providing the embedding matrix and index2word
+
+        Args:
+            matrix (np.ndarray, optional): The embedding matrix of the embedding
+            index2word (list, optional): A list of words in the order of corresponding vector to the matrix 
+        """
+
         self._matrix = matrix
         self._index2word = index2word
 
@@ -35,6 +42,9 @@ class Embedding(object):
         Args:
             trainable (bool): Whether to freeze the layer weights
             **kwargs: Other kwargs to Keras
+        
+        Returns:
+            An instance of keras.embeddings.Embedding
         """
 
         try:
@@ -42,7 +52,7 @@ class Embedding(object):
         except:
             raise ImportError('Keras not found')
         
-        return Embedding(self._vocab_size, self._dim, weights=[self._matrix], trainable=trainable, **kwargs)
+        return Embedding(self.vocab_size, self.dim, weights=[self._matrix], trainable=trainable, **kwargs)
     
     def get_pytorch_layer(self, trainable=False):
         """Creates a Pytorch embedding layer with the loaded vectors
@@ -50,6 +60,9 @@ class Embedding(object):
 
         Args:
             trainable (bool): Whether to freeze the layer weights
+        
+        Returns:
+            An instance of torch.nn.Embedding
         """
 
         try:
@@ -61,6 +74,14 @@ class Embedding(object):
         return Embedding.from_pretrained(torch.FloatTensor(self._matrix), freeze=trainable)
     
     def create_subset(self, index2word):
+        """Create another embedding containing the vectors of a subset of the original vocabulary
+
+        Args:
+            index2word (list): A list of words in the subset
+
+        Returns:
+            An Embedding object containing for the subset of words
+        """
         indices = [self._model.vocab[word].index for word in index2word]
         matrix = self.matrix[indices]
         return Embedding(matrix=matrix, index2word=index2word)
