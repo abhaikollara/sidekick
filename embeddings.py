@@ -8,7 +8,7 @@ class Embedding(object):
 
         Args:
             matrix (np.ndarray, optional): The embedding matrix of the embedding
-            index2word (list, optional): A list of words in the order of corresponding vector to the matrix 
+            index2word (list, optional): A list of words in the order of corresponding vectors in the matrix 
         """
 
         self._matrix = matrix
