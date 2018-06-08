@@ -11,8 +11,8 @@ class Embedding(object):
     def load_glove(self, path):
         pass
     
-    def get_keras_layer(trainable=False):
+    def get_keras_layer(self, trainable=False):
         pass
     
-    def get_pytorch_layer(trainable=False):
+    def get_pytorch_layer(self, trainable=False):
         pass
