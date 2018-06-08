@@ -21,7 +21,7 @@ class Embedding(object):
         except:
             raise ImportError('Keras not found')
         
-        return Embedding(self._vocab_size, self._dim, weights=[self._matrix])
+        return Embedding(self._vocab_size, self._dim, weights=[self._matrix], trainable=trainable)
     
     def get_pytorch_layer(self, trainable=False):
         try:
@@ -30,7 +30,7 @@ class Embedding(object):
         except:
             raise ImportError('PyTorch not found')
 
-        return Embedding.from_pretrained(torch.FloatTensor(self._matrix))
+        return Embedding.from_pretrained(torch.FloatTensor(self._matrix), freeze=trainable)
 
     @property
     def model(self):
