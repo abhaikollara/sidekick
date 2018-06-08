@@ -15,13 +15,13 @@ class Embedding(object):
     def load_glove(self, path):
         pass
     
-    def get_keras_layer(self, trainable=False):
+    def get_keras_layer(self, trainable=False, **kwargs):
         try:
             from keras.layers.embeddings import Embedding
         except:
             raise ImportError('Keras not found')
         
-        return Embedding(self._vocab_size, self._dim, weights=[self._matrix], trainable=trainable)
+        return Embedding(self._vocab_size, self._dim, weights=[self._matrix], trainable=trainable. **kwargs)
     
     def get_pytorch_layer(self, trainable=False):
         try:
