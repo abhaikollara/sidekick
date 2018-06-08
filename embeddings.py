@@ -8,7 +8,10 @@ class Embedding(object):
         self._index2word = index2word
 
         if matrix is not None:
-            assert index2word is not None
+            if index2word is None:
+                raise TypeError('index2word cannot be None if matrix is provided')
+            if matrix.shape[0] != len(index2word):
+                raise ValueError('Embedding matrix and index2word contain unequal number of items')
     
     def load_word2vec(self, path, binary=True):
         """Load word2vec model from file
@@ -21,7 +24,6 @@ class Embedding(object):
         self._model = KeyedVectors.load_word2vec_format(path, binary=binary)
         self._index2word = self._model.index2word
         self._matrix = self._model.syn0
-        self._vocab_size, self._dim = self._matrix.shape
 
     def load_glove(self, path):
         pass
@@ -80,9 +82,9 @@ class Embedding(object):
     @property
     def vocab_size(self):
         """int: Total number of words in the vocabulary"""
-        return self._vocab_size
+        return self._matrix.shape[0]
     
     @property
     def dim(self):
         """int: The vector size/embedding dimension"""
-        return self._dim
+        return self._matrix.shape[1]
