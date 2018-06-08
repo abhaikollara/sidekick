@@ -21,7 +21,7 @@ class Embedding(object):
         except:
             raise ImportError('Keras not found')
         
-        return Embedding(self._vocab_size, self._dim)
+        return Embedding(self._vocab_size, self._dim, weights=[self._matrix])
     
     def get_pytorch_layer(self, trainable=False):
         pass
