@@ -24,7 +24,13 @@ class Embedding(object):
         return Embedding(self._vocab_size, self._dim, weights=[self._matrix])
     
     def get_pytorch_layer(self, trainable=False):
-        pass
+        try:
+            import torch
+            from torch.nn import Embedding
+        except:
+            raise ImportError('PyTorch not found')
+
+        return Embedding.from_pretrained(torch.FloatTensor(self._matrix))
 
     @property
     def model(self):
