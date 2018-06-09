@@ -33,6 +33,14 @@ class Embedding(object):
         self._index2word = model.index2word
 
     def load_glove(self, path, vocab_size=None, dim=None):
+        """Load glove model from file
+
+        Args:
+            path (str): Path to the word2vec file
+            binary (bool): Whether the file is in binary format
+            vocab_size (int, optional): Number of words in the vocabulary, providing this reduces the loading time
+            dim (int, optional): Embedding dimension
+        """
         if vocab_size is None:
             vocab_size = 0
             with open(path, 'r') as f:
