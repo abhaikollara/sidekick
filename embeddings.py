@@ -1,6 +1,7 @@
 import numpy as np
 from gensim.models import KeyedVectors
 
+
 class Embedding(object):
 
     def __init__(self, matrix=None, index2word=None):
@@ -16,10 +17,12 @@ class Embedding(object):
 
         if matrix is not None:
             if index2word is None:
-                raise TypeError('index2word cannot be None if matrix is provided')
+                raise TypeError(
+                    'index2word cannot be None if matrix is provided')
             if matrix.shape[0] != len(index2word):
-                raise ValueError('Embedding matrix and index2word contain unequal number of items')
-    
+                raise ValueError(
+                    'Embedding matrix and index2word contain unequal number of items')
+
     def load_word2vec(self, path, binary=True):
         """Load word2vec model from file
 
@@ -27,7 +30,7 @@ class Embedding(object):
             path (str): Path to the word2vec file
             binary (bool): Whether the file is in binary format
         """
-    
+
         model = KeyedVectors.load_word2vec_format(path, binary=binary)
         self._matrix = model.syn0
         self._index2word = model.index2word
@@ -54,7 +57,7 @@ class Embedding(object):
         self._matrix = np.zeros((vocab_size, dim))
         words = []
 
-        update = words.append #Speedup
+        update = words.append  # Speedup
         with open(path, 'r') as f:
             for i, line in enumerate(f):
                 split = line.split(u' ')
@@ -62,7 +65,7 @@ class Embedding(object):
                 self._matrix[i] = np.asarray([float(val) for val in split[1:]])
 
         self.index2word = words
-    
+
     def get_keras_layer(self, trainable=False, **kwargs):
         """Creates a Keras embedding layer with the loaded vectors
         as weights
@@ -70,7 +73,7 @@ class Embedding(object):
         Args:
             trainable (bool): Whether to freeze the layer weights
             **kwargs: Other kwargs to Keras
-        
+
         Returns:
             An instance of keras.embeddings.Embedding
         """
@@ -79,16 +82,16 @@ class Embedding(object):
             from keras.layers.embeddings import Embedding
         except:
             raise ImportError('Keras not found')
-        
+
         return Embedding(self.vocab_size, self.dim, weights=[self._matrix], trainable=trainable, **kwargs)
-    
+
     def get_pytorch_layer(self, trainable=False):
         """Creates a Pytorch embedding layer with the loaded vectors
         as weights
 
         Args:
             trainable (bool): Whether to freeze the layer weights
-        
+
         Returns:
             An instance of torch.nn.Embedding
         """
@@ -100,7 +103,7 @@ class Embedding(object):
             raise ImportError('PyTorch not found')
 
         return Embedding.from_pretrained(torch.FloatTensor(self._matrix), freeze=trainable)
-    
+
     def create_subset(self, index2word):
         """Create another embedding containing the vectors of a subset of the original vocabulary
 
@@ -118,7 +121,7 @@ class Embedding(object):
     def matrix(self):
         """np.ndarray: The embedding matrix of shape vocab_size x embedding dim"""
         return self._matrix
-    
+
     @property
     def index2word(self):
         """list: A list of all words in the vocab"""
@@ -128,18 +131,18 @@ class Embedding(object):
     def index2word(self, index2word):
         self._index2word = index2word
         if index2word is not None:
-            self._index_dict = {index2word[i]:i for i in range(len(index2word))}
+            self._index_dict = {index2word[i]: i for i in range(len(index2word))}
 
     @property
     def vocab_size(self):
         """int: Total number of words in the vocabulary"""
         return self._matrix.shape[0]
-    
+
     @property
     def dim(self):
         """int: The vector size/embedding dimension"""
         return self._matrix.shape[1]
-    
+
     def __contains__(self, item):
         return item in self._index_dict
 
