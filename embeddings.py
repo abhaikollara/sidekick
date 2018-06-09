@@ -13,8 +13,6 @@ class Embedding(object):
 
         self._matrix = matrix
         self._index2word = index2word
-        if index2word is not None:
-            self._index_dict = {index2word[i]:i for i in range(len(index2word))}
 
         if matrix is not None:
             if index2word is None:
@@ -30,10 +28,9 @@ class Embedding(object):
             binary (bool): Whether the file is in binary format
         """
     
-        self._model = KeyedVectors.load_word2vec_format(path, binary=binary)
-        self._matrix = self._model.syn0
-        self._index2word = self._model.index2word
-        self._index_dict = {self._index2word[i]:i for i in range(len(self._index2word))}
+        model = KeyedVectors.load_word2vec_format(path, binary=binary)
+        self._matrix = model.syn0
+        self._index2word = model.index2word
 
     def load_glove(self, path, vocab_size=None, dim=None):
         if vocab_size is None:
@@ -47,16 +44,16 @@ class Embedding(object):
                 dim = len(f.readline().split(u' ')) - 1
 
         self._matrix = np.zeros((vocab_size, dim))
-        self._index2word = []
+        words = []
 
-        update = self._index2word.append #Speedup
+        update = words.append #Speedup
         with open(path, 'r') as f:
             for i, line in enumerate(f):
                 split = line.split(u' ')
                 update(split[0])
                 self._matrix[i] = np.asarray([float(val) for val in split[1:]])
 
-        self._index_dict = {self._index2word[i]:i for i in range(len(self._index2word))}
+        self.index2word = words
     
     def get_keras_layer(self, trainable=False, **kwargs):
         """Creates a Keras embedding layer with the loaded vectors
@@ -110,10 +107,6 @@ class Embedding(object):
         return Embedding(matrix=matrix, index2word=index2word)
 
     @property
-    def model(self):
-        return self._model
-    
-    @property
     def matrix(self):
         """np.ndarray: The embedding matrix of shape vocab_size x embedding dim"""
         return self._matrix
@@ -122,6 +115,12 @@ class Embedding(object):
     def index2word(self):
         """list: A list of all words in the vocab"""
         return self._index2word
+
+    @index2word.setter
+    def index2word(self, index2word):
+        self._index2word = index2word
+        if index2word is not None:
+            self._index_dict = {index2word[i]:i for i in range(len(index2word))}
 
     @property
     def vocab_size(self):
