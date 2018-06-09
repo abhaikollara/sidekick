@@ -18,7 +18,7 @@ class Tokenizer(object):
         if frozen:
             assert oov_idx is not None, "Assign a word index for out-of-vocabulary words"
             self.oov_idx = oov_idx
-        self.idx = len(tok2idx)
+        self.idx = len(token2idx)
 
     def tokenize(self, token):
         """Converts a single token to a numerical index.
@@ -26,13 +26,13 @@ class Tokenizer(object):
         Args:
             token (str): A single token to be converted into a numerical index
         """
-        if token not in self.tok2idx:
+        if token not in self.token2idx:
             if self.frozen:
                 return self.oov_idx
             else:
-                self.tok2idx[token] = self.idx
+                self.token2idx[token] = self.idx
                 self.idx += 1
-        return self.tok2idx[token]
+        return self.token2idx[token]
 
     def split(self, sequence):
         """Method to split the sequence
