@@ -35,8 +35,28 @@ class Embedding(object):
         self._index2word = self._model.index2word
         self._index_dict = {self._index2word[i]:i for i in range(len(self._index2word))}
 
-    def load_glove(self, path):
-        pass
+    def load_glove(self, path, vocab_size=None, dim=None):
+        if vocab_size is None:
+            vocab_size = 0
+            with open(path, 'r') as f:
+                for line in f:
+                    vocab_size += 1
+
+        if dim is None:
+            with open(path, 'r') as f:
+                dim = len(f.readline().split(u' ')) - 1
+
+        self._matrix = np.zeros((vocab_size, dim))
+        self._index2word = []
+
+        update = self._index2word.append #Speedup
+        with open(path, 'r') as f:
+            for i, line in enumerate(f):
+                split = line.split(u' ')
+                update(split[0])
+                self._matrix[i] = np.asarray([float(val) for val in split[1:]])
+
+        self._index_dict = {self._index2word[i]:i for i in range(len(self._index2word))}
     
     def get_keras_layer(self, trainable=False, **kwargs):
         """Creates a Keras embedding layer with the loaded vectors
