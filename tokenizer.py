@@ -35,6 +35,9 @@ class Tokenizer(object):
         return self.tok2idx[token]
 
     def split(self, sequence):
+        """Method to split the sequence
+        Re implement this method for other tokenizers
+        """
         return sequence.split()
 
     def tokenize_sequence(self, sequence):
