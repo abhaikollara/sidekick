@@ -44,12 +44,15 @@ class Embedding(object):
             vocab_size (int, optional): Number of words in the vocabulary, providing this reduces the loading time
             dim (int, optional): Embedding dimension
         """
+
+        # Infer vocab size by reading number of lines
         if vocab_size is None:
             vocab_size = 0
             with open(path, 'r') as f:
                 for line in f:
                     vocab_size += 1
 
+        # Infer vector dim by reading a single line
         if dim is None:
             with open(path, 'r') as f:
                 dim = len(f.readline().split(u' ')) - 1
@@ -105,7 +108,7 @@ class Embedding(object):
         return Embedding.from_pretrained(torch.FloatTensor(self._matrix), freeze=trainable)
 
     def create_subset(self, index2word):
-        """Create another embedding containing the vectors of a subset of the original vocabulary
+        """Create another embedding of a subset of the original vocabulary
 
         Args:
             index2word (list): A list of words in the subset
