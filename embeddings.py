@@ -4,24 +4,24 @@ from gensim.models import KeyedVectors
 
 class Embedding(object):
 
-    def __init__(self, matrix=None, index2word=None):
-        """Initialize an embedding optionally by providing the embedding matrix and index2word
+    def __init__(self, matrix=None, vocab=None):
+        """Initialize an embedding optionally by providing the embedding matrix and vocab
 
         Args:
             matrix (np.ndarray, optional): The embedding matrix of the embedding
-            index2word (list, optional): A list of words in the order of corresponding vectors in the matrix 
+            vocab (list, optional): A list of words in the order of corresponding vectors in the matrix 
         """
 
         self._matrix = matrix
-        self._index2word = index2word
+        self._vocab = vocab
 
         if matrix is not None:
-            if index2word is None:
+            if vocab is None:
                 raise TypeError(
-                    'index2word cannot be None if matrix is provided')
-            if matrix.shape[0] != len(index2word):
+                    'vocab cannot be None if matrix is provided')
+            if matrix.shape[0] != len(vocab):
                 raise ValueError(
-                    'Embedding matrix and index2word contain unequal number of items')
+                    'Embedding matrix and vocab contain unequal number of items')
 
     def load_word2vec(self, path, binary=True):
         """Load word2vec model from file
@@ -33,7 +33,7 @@ class Embedding(object):
 
         model = KeyedVectors.load_word2vec_format(path, binary=binary)
         self._matrix = model.syn0
-        self._index2word = model.index2word
+        self._vocab = model.vocab
 
     def load_glove(self, path, vocab_size=None, dim=None):
         """Load glove model from file
@@ -67,7 +67,7 @@ class Embedding(object):
                 update(split[0])
                 self._matrix[i] = np.asarray([float(val) for val in split[1:]])
 
-        self.index2word = words
+        self.vocab = words
 
     def get_keras_layer(self, trainable=False, **kwargs):
         """Creates a Keras embedding layer with the loaded vectors
@@ -107,18 +107,18 @@ class Embedding(object):
 
         return Embedding.from_pretrained(torch.FloatTensor(self._matrix), freeze=trainable)
 
-    def create_subset(self, index2word):
+    def create_subset(self, vocab):
         """Create another embedding of a subset of the original vocabulary
 
         Args:
-            index2word (list): A list of words in the subset
+            vocab (list): A list of words in the subset
 
         Returns:
             An Embedding object containing for the subset of words
         """
-        indices = [self._index_dict[word] for word in index2word]
+        indices = [self._index_dict[word] for word in vocab]
         matrix = self.matrix[indices]
-        return Embedding(matrix=matrix, index2word=index2word)
+        return Embedding(matrix=matrix, vocab=vocab)
 
     @property
     def matrix(self):
@@ -126,15 +126,15 @@ class Embedding(object):
         return self._matrix
 
     @property
-    def index2word(self):
+    def vocab(self):
         """list: A list of all words in the vocab"""
-        return self._index2word
+        return self._vocab
 
-    @index2word.setter
-    def index2word(self, index2word):
-        self._index2word = index2word
-        if index2word is not None:
-            self._index_dict = {index2word[i]: i for i in range(len(index2word))}
+    @vocab.setter
+    def vocab(self, vocab):
+        self._vocab = vocab
+        if vocab is not None:
+            self._index_dict = {vocab[i]: i for i in range(len(vocab))}
 
     @property
     def vocab_size(self):
@@ -150,4 +150,10 @@ class Embedding(object):
         return item in self._index_dict
 
     def __getitem__(self, idx):
-        return (self.index2word[idx], self.matrix[idx])
+        return (self.vocab[idx], self.matrix[idx])
+
+    def __add__(self, other):
+        matrix = np.concatenate([self.matrix, other.matrix], axis=0)
+        vocab = self.vocab + other.vocab
+
+        return Embedding(matrix=matrix, vocab=vocab)
