@@ -146,6 +146,10 @@ class Embedding(object):
         """int: The vector size/embedding dimension"""
         return self._matrix.shape[1]
 
+    @property
+    def index_dict(self):
+        return self._index_dict
+
     def __contains__(self, item):
         return item in self._index_dict
 
