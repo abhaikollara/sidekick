@@ -47,10 +47,11 @@ class Embedding(object):
                     update(word)
                     vecs = f.read(FLOAT_SIZE * vector_size)
                     self._matrix[i] = np.frombuffer(vecs, 'f')
+
+                self.vocab = words
         else:
             print("This feature is yet to be implemented")
         
-        self.vocab = words
 
     def load_glove(self, path, vocab_size=None, dim=None):
         """Load glove model from file
