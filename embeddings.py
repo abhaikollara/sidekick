@@ -35,8 +35,8 @@ class Embedding(object):
                 FLOAT_SIZE = 4
                 self._matrix = np.empty([num_vectors, vector_size], dtype='float32')
                 
-                word_list = []
-                update = word_list.append #Speedup
+                words = []
+                update = words.append #Speedup
                 for i in range(num_vectors):
                     word = b""
                     while True:
@@ -50,7 +50,7 @@ class Embedding(object):
         else:
             print("This feature is yet to be implemented")
         
-        self.vocab = word_list
+        self.vocab = words
 
     def load_glove(self, path, vocab_size=None, dim=None):
         """Load glove model from file
