@@ -34,13 +34,13 @@ class Tokenizer(object):
                 self.idx += 1
         return self.token2idx[token]
 
-    def split(self, sequence):
+    def split(self, sentence):
         """Method to split the sequence
         Re implement this method for other tokenizers
         """
-        return sequence.split()
+        return sentence.split()
 
-    def tokenize_sequence(self, sequence):
+    def tokenize_sentence(self, sentence, char_level=False):
         """
         Splits and converts a sequence to a list
         numerical indices
@@ -50,9 +50,12 @@ class Tokenizer(object):
         Returns:
             A list of numerical indices
         """
-        return [self.tokenize(word) for word in self.split(sequence)]
+        if char_level:
+            return [[self.tokenize(char) for char in list(word)] for word in self.split(sentence)]
+        else:
+            return [self.tokenize(word) for word in self.split(sentence)]
     
-    def tokenize_list_of_sequences(self, sequence_list):
+    def tokenize_list_of_sentences(self, sentence_list):
         """
         Splits and converts a list of sequences to a list
         numerical indices
@@ -63,4 +66,5 @@ class Tokenizer(object):
             A list of list of numerical indices
         """
 
-        return [self.tokenize_sequence(sequence) for sequence in sequence_list]
+        return [self.tokenize_sentence(sentence) for sentence in sentence_list]
+
