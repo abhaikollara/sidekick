@@ -101,8 +101,8 @@ class Embedding(object):
 
         update = words.append  # Speedup
         with open(path, 'r') as f:
-            for i, line in enumerate(f, len(words)):
-                split = line.split(u' ', 1)
+            for i in tqdm(range(len(words), self.matrix.shape[0])):
+                split = f.readline().split(u' ', 1)
                 update(split[0])
                 self._matrix[i] = np.fromstring(split[1], 'f', sep=u' ')
 
