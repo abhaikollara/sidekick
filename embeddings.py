@@ -161,7 +161,7 @@ class Embedding(object):
             vocab.insert(1, '__OUT_OF_VOCAB__')
             indices = [self._index_dict[word] if word in self.index_dict else 1 for word in vocab]
         else:
-        indices = [self._index_dict[word] for word in vocab]
+            indices = [self._index_dict[word] for word in vocab]
         matrix = self.matrix[indices]
         return Embedding(matrix=matrix, vocab=vocab)
 
