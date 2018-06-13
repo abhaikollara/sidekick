@@ -1,6 +1,4 @@
 import numpy as np
-from gensim.models import KeyedVectors
-
 
 class Embedding(object):
 
@@ -31,9 +29,28 @@ class Embedding(object):
             binary (bool): Whether the file is in binary format
         """
 
-        model = KeyedVectors.load_word2vec_format(path, binary=binary)
-        self._matrix = model.syn0
-        self._vocab = model.vocab
+        if binary:
+            with open(path, 'rb') as f:
+                num_vectors, vector_size = map(int, f.readline().decode('UTF-8').split())
+                FLOAT_SIZE = 4
+                self._matrix = np.empty([num_vectors, vector_size], dtype='float32')
+                
+                word_list = []
+                update = word_list.append #Speedup
+                for i in range(num_vectors):
+                    word = b""
+                    while True:
+                        char = f.read(1)
+                        if char == b" ":
+                            break
+                        word += char
+                    update(word)
+                    vecs = f.read(FLOAT_SIZE * vector_size)
+                    self._matrix[i] = np.frombuffer(vecs, 'f')
+        else:
+            print("This feature is yet to be implemented")
+        
+        self.vocab = word_list
 
     def load_glove(self, path, vocab_size=None, dim=None):
         """Load glove model from file
