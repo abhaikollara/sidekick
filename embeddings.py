@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 class Embedding(object):
 
-    def __init__(self, matrix=None):
+    def __init__(self, matrix=None, vocab=None):
         """Initialize an embedding optionally by providing the embedding matrix and vocab
 
         Args:
