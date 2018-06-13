@@ -80,9 +80,9 @@ class Embedding(object):
         update = words.append  # Speedup
         with open(path, 'r') as f:
             for i, line in enumerate(f):
-                split = line.split(u' ')
+                split = line.split(u' ', 1)
                 update(split[0])
-                self._matrix[i] = np.asarray([float(val) for val in split[1:]])
+                self._matrix[i] = np.fromstring(split[1], 'f', sep=u' ')
 
         self.vocab = words
 
