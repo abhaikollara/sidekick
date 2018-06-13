@@ -31,11 +31,14 @@ class Embedding(object):
             path (str): Path to the word2vec file
             binary (bool): Whether the file is in binary format
         """
+        self.allow_oov = reserve_oov_token
+        self.reserve_zero = reserve_zero
         words = []
-        if reserve_zero:
+        if self.reserve_zero:
             words.append('__ZERO__')
-        if reserve_oov_token:
+        if self.reserve_zero:
             words.append('__OUT_OF_VOCAB__')
+
 
         if binary:
             with open(path, 'rb') as f:
@@ -152,6 +155,12 @@ class Embedding(object):
         Returns:
             An Embedding object containing for the subset of words
         """
+        if self.reserve_zero:
+            vocab.insert(0, '__ZERO__')
+        if self.allow_oov:
+            vocab.insert(1, '__OUT_OF_VOCAB__')
+            indices = [self._index_dict[word] if word in self.index_dict else 1 for word in vocab]
+        else:
         indices = [self._index_dict[word] for word in vocab]
         matrix = self.matrix[indices]
         return Embedding(matrix=matrix, vocab=vocab)
