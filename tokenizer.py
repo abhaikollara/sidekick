@@ -1,5 +1,6 @@
 import re
 
+
 class Tokenizer(object):
 
     def __init__(self, token2idx={}, frozen=False, oov_idx=None):
@@ -55,7 +56,7 @@ class Tokenizer(object):
             return [[self.tokenize(char) for char in list(word)] for word in self.split(sentence)]
         else:
             return [self.tokenize(word) for word in self.split(sentence)]
-    
+
     def tokenize_list_of_sentences(self, sentence_list, char_level=False):
         """
         Splits and converts a list of sequences to a list
@@ -68,7 +69,6 @@ class Tokenizer(object):
         """
 
         return [self.tokenize_sentence(sentence, char_level=char_level) for sentence in sentence_list]
-
 
 
 class TreebankWordTokenizer(Tokenizer):
@@ -106,7 +106,8 @@ class TreebankWordTokenizer(Tokenizer):
         (re.compile(r'([:,])$'), r' \1 '),
         (re.compile(r'\.\.\.'), r' ... '),
         (re.compile(r'[;@#$%&]'), r' \g<0> '),
-        (re.compile(r'([^\.])(\.)([\]\)}>"\']*)\s*$'), r'\1 \2\3 '),  # Handles the final period.
+        # Handles the final period.
+        (re.compile(r'([^\.])(\.)([\]\)}>"\']*)\s*$'), r'\1 \2\3 '),
         (re.compile(r'[?!]'), r' \g<0> '),
 
         (re.compile(r"([^'])' "), r"\1 ' "),
