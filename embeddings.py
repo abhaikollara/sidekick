@@ -39,17 +39,18 @@ class Embedding(object):
         if self.reserve_zero:
             words.append('__OUT_OF_VOCAB__')
 
-
         if binary:
             with open(path, 'rb') as f:
-                num_vectors, vector_size = map(int, f.readline().decode('UTF-8').split())
+                num_vectors, vector_size = map(
+                    int, f.readline().decode('UTF-8').split())
                 FLOAT_SIZE = 4
 
-                self._matrix = np.zeros([num_vectors + len(words), vector_size], dtype='float32')
+                self._matrix = np.zeros(
+                    [num_vectors + len(words), vector_size], dtype='float32')
                 if len(words) > 1:
                     self._matrix[len(words)-1] = np.random.randn(vector_size, )
 
-                update = words.append #Speedup
+                update = words.append  # Speedup
                 for i in tqdm(range(len(words), num_vectors+len(words))):
                     word = b""
                     while True:
@@ -64,7 +65,6 @@ class Embedding(object):
                 self.vocab = words
         else:
             print("This feature is yet to be implemented")
-        
 
     def load_glove(self, path, vocab_size=None, dim=None, reserve_zero=True, reserve_oov_token=True):
         """Load glove model from file
@@ -93,7 +93,6 @@ class Embedding(object):
             words.append('__ZERO__')
         if reserve_oov_token:
             words.append('__OUT_OF_VOCAB__')
-
 
         self._matrix = np.zeros((vocab_size+len(words), dim))
         if len(words) > 1:
@@ -159,7 +158,8 @@ class Embedding(object):
             vocab.insert(0, '__ZERO__')
         if self.allow_oov:
             vocab.insert(1, '__OUT_OF_VOCAB__')
-            indices = [self._index_dict[word] if word in self.index_dict else 1 for word in vocab]
+            indices = [self._index_dict[word]
+                       if word in self.index_dict else 1 for word in vocab]
         else:
             indices = [self._index_dict[word] for word in vocab]
         matrix = self.matrix[indices]
