@@ -23,7 +23,7 @@ class Embedding(object):
                 raise ValueError(
                     'Embedding matrix and vocab contain unequal number of items')
 
-    def load_word2vec(self, path, binary=True, reserve_zero=True, reserve_oov_token=True):
+    def load_word2vec(self, path, binary=True, reserve_zero=True, reserve_oov_token=True, sub_vocab=None):
         """Load word2vec model from file
 
         Args:
@@ -35,7 +35,7 @@ class Embedding(object):
         words = []
         if self.reserve_zero:
             words.append('__ZERO__')
-        if self.reserve_zero:
+        if self.reserve_oov_token:
             words.append('__OUT_OF_VOCAB__')
 
         if binary:
@@ -62,7 +62,8 @@ class Embedding(object):
                             break
                         word += char
                     update(word)
-
+                    # if sub_vocab is not None:
+                        # pass
                     #Read vector
                     vecs = f.read(FLOAT_SIZE * vector_size)
                     self._matrix[i] = np.frombuffer(vecs, 'f')
@@ -94,9 +95,13 @@ class Embedding(object):
                 dim = len(f.readline().split(u' ')) - 1
 
         words = []
-        if reserve_zero:
+
+        self.allow_oov = reserve_oov_token
+        self.reserve_zero = reserve_zero
+
+        if self.reserve_zero:
             words.append('__ZERO__')
-        if reserve_oov_token:
+        if self.reserve_oov_token:
             words.append('__OUT_OF_VOCAB__')
 
         self._matrix = np.zeros((vocab_size+len(words), dim))
