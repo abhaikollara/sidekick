@@ -35,7 +35,7 @@ class Embedding(object):
         words = []
         if self.reserve_zero:
             words.append('__ZERO__')
-        if self.reserve_oov_token:
+        if self.allow_oov:
             words.append('__OUT_OF_VOCAB__')
 
         if binary:
@@ -101,7 +101,7 @@ class Embedding(object):
 
         if self.reserve_zero:
             words.append('__ZERO__')
-        if self.reserve_oov_token:
+        if self.allow_oov:
             words.append('__OUT_OF_VOCAB__')
 
         self._matrix = np.zeros((vocab_size+len(words), dim))
