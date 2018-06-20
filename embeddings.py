@@ -2,7 +2,6 @@ import numpy as np
 import tqdm
 from tqdm import tqdm
 
-
 class Embedding(object):
 
     def __init__(self, matrix=None, vocab=None):
@@ -41,12 +40,15 @@ class Embedding(object):
 
         if binary:
             with open(path, 'rb') as f:
+                # Get number of vectors and vector size
+                # from first line
                 num_vectors, vector_size = map(
                     int, f.readline().decode('UTF-8').split())
                 FLOAT_SIZE = 4
 
                 self._matrix = np.zeros(
                     [num_vectors + len(words), vector_size], dtype='float32')
+                # Assign random vector for OOV token if it exists
                 if len(words) > 1:
                     self._matrix[len(words)-1] = np.random.randn(vector_size, )
 
@@ -58,6 +60,7 @@ class Embedding(object):
                         if char == b" ":
                             break
                         word += char
+
                     update(word)
                     vecs = f.read(FLOAT_SIZE * vector_size)
                     self._matrix[i] = np.frombuffer(vecs, 'f')
@@ -106,6 +109,26 @@ class Embedding(object):
                 self._matrix[i] = np.fromstring(split[1], 'f', sep=u' ')
 
         self.vocab = words
+
+    def create_subset(self, vocab):
+        """Create another embedding of a subset of the original vocabulary
+
+        Args:
+            vocab (list): A list of words in the subset
+
+        Returns:
+            An Embedding object containing for the subset of words
+        """
+        if self.reserve_zero:
+            vocab.insert(0, '__ZERO__')
+        if self.allow_oov:
+            vocab.insert(1, '__OUT_OF_VOCAB__')
+            indices = [self._index_dict[word]
+                       if word in self.index_dict else 1 for word in vocab]
+        else:
+            indices = [self._index_dict[word] for word in vocab]
+        matrix = self.matrix[indices]
+        return Embedding(matrix=matrix, vocab=vocab)
 
     def get_keras_layer(self, trainable=False, **kwargs):
         """Creates a Keras embedding layer with the loaded vectors
