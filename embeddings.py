@@ -54,14 +54,16 @@ class Embedding(object):
 
                 update = words.append  # Speedup
                 for i in tqdm(range(len(words), num_vectors+len(words))):
+                    # Reads until a whitespace is found (get a word)
                     word = b""
                     while True:
                         char = f.read(1)
                         if char == b" ":
                             break
                         word += char
-
                     update(word)
+
+                    #Read vector
                     vecs = f.read(FLOAT_SIZE * vector_size)
                     self._matrix[i] = np.frombuffer(vecs, 'f')
 
@@ -98,6 +100,7 @@ class Embedding(object):
             words.append('__OUT_OF_VOCAB__')
 
         self._matrix = np.zeros((vocab_size+len(words), dim))
+        # Assign random vector for OOV token if it exists
         if len(words) > 1:
             self._matrix[len(words)-1] = np.random.randn(dim, )
 
@@ -167,26 +170,6 @@ class Embedding(object):
             raise ImportError('PyTorch not found')
 
         return Embedding.from_pretrained(torch.FloatTensor(self._matrix), freeze=trainable)
-
-    def create_subset(self, vocab):
-        """Create another embedding of a subset of the original vocabulary
-
-        Args:
-            vocab (list): A list of words in the subset
-
-        Returns:
-            An Embedding object containing for the subset of words
-        """
-        if self.reserve_zero:
-            vocab.insert(0, '__ZERO__')
-        if self.allow_oov:
-            vocab.insert(1, '__OUT_OF_VOCAB__')
-            indices = [self._index_dict[word]
-                       if word in self.index_dict else 1 for word in vocab]
-        else:
-            indices = [self._index_dict[word] for word in vocab]
-        matrix = self.matrix[indices]
-        return Embedding(matrix=matrix, vocab=vocab)
 
     @property
     def matrix(self):
