@@ -13,7 +13,7 @@ class Embedding(object):
         """
 
         self._matrix = matrix
-        self._vocab = vocab
+        self.vocab = vocab
 
         if matrix is not None:
             if vocab is None:
@@ -116,7 +116,7 @@ class Embedding(object):
 
         self.vocab = words
 
-    def create_subset(self, vocab):
+    def load_subset(self, vocab):
         """Create another embedding of a subset of the original vocabulary
 
         Args:
