@@ -2,7 +2,7 @@ import numpy as np
 import tqdm
 from tqdm import tqdm
 
-class Embedding(object):
+class Vectors(object):
 
     def __init__(self, matrix=None, vocab=None):
         """Initialize an embedding optionally by providing the embedding matrix and vocab
