@@ -1,5 +1,84 @@
 import re
+import numpy as np
 
+def pad_sequences(sequences, maxlen=None, dtype='int32',
+                  padding='pre', truncating='pre', value=0.):
+    """Pads sequences to the same length.
+    This function transforms a list of
+    `num_samples` sequences (lists of integers)
+    into a 2D Numpy array of shape `(num_samples, num_timesteps)`.
+    `num_timesteps` is either the `maxlen` argument if provided,
+    or the length of the longest sequence otherwise.
+    Sequences that are shorter than `num_timesteps`
+    are padded with `value` at the end.
+    Sequences longer than `num_timesteps` are truncated
+    so that they fit the desired length.
+    The position where padding or truncation happens is determined by
+    the arguments `padding` and `truncating`, respectively.
+    Pre-padding is the default.
+    # Arguments
+        sequences: List of lists, where each element is a sequence.
+        maxlen: Int, maximum length of all sequences.
+        dtype: Type of the output sequences.
+        padding: String, 'pre' or 'post':
+            pad either before or after each sequence.
+        truncating: String, 'pre' or 'post':
+            remove values from sequences larger than
+            `maxlen`, either at the beginning or at the end of the sequences.
+        value: Float, padding value.
+    # Returns
+        x: Numpy array with shape `(len(sequences), maxlen)`
+    # Raises
+        ValueError: In case of invalid values for `truncating` or `padding`,
+            or in case of invalid shape for a `sequences` entry.
+    """
+    if not hasattr(sequences, '__len__'):
+        raise ValueError('`sequences` must be iterable.')
+    lengths = []
+    for x in sequences:
+        if not hasattr(x, '__len__'):
+            raise ValueError('`sequences` must be a list of iterables. '
+                             'Found non-iterable: ' + str(x))
+        lengths.append(len(x))
+
+    num_samples = len(sequences)
+    if maxlen is None:
+        maxlen = np.max(lengths)
+
+    # take the sample shape from the first non empty sequence
+    # checking for consistency in the main loop below.
+    sample_shape = tuple()
+    for s in sequences:
+        if len(s) > 0:
+            sample_shape = np.asarray(s).shape[1:]
+            break
+
+    x = (np.ones((num_samples, maxlen) + sample_shape) * value).astype(dtype)
+    for idx, s in enumerate(sequences):
+        if not len(s):
+            continue  # empty list/array was found
+        if truncating == 'pre':
+            trunc = s[-maxlen:]
+        elif truncating == 'post':
+            trunc = s[:maxlen]
+        else:
+            raise ValueError('Truncating type "%s" '
+                             'not understood' % truncating)
+
+        # check `trunc` has expected shape
+        trunc = np.asarray(trunc, dtype=dtype)
+        if trunc.shape[1:] != sample_shape:
+            raise ValueError('Shape of sample %s of sequence at position %s '
+                             'is different from expected shape %s' %
+                             (trunc.shape[1:], idx, sample_shape))
+
+        if padding == 'post':
+            x[idx, :len(trunc)] = trunc
+        elif padding == 'pre':
+            x[idx, -len(trunc):] = trunc
+        else:
+            raise ValueError('Padding type "%s" not understood' % padding)
+    return x
 
 class Tokenizer(object):
 
