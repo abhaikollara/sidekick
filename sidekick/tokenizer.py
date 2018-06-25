@@ -125,9 +125,8 @@ class Tokenizer(object):
         Splits and converts a sequence to a list
         numerical indices
         Accepts:
-            sentence: Sentence to be converted
-            split: Delimiter for splitting
-            char_level: Tokenize at char_level
+            sentence: (list) Sentence to be converted
+            char_level: (bool) Whether to tokenize at char level
         Returns:
             A list of numerical indices
         """
@@ -141,8 +140,8 @@ class Tokenizer(object):
         Splits and converts a list of sequences to a list
         numerical indices
         Accepts:
-            sentence: Sentence to be converted
-            split: Delimiter for splitting
+            sentence_list: List of sentences to be converted
+            char_level: (bool) Whether to tokenize at char level
         Returns:
             A list of list of numerical indices
         """
