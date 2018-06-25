@@ -4,18 +4,6 @@ import numpy as np
 def pad_sequences(sequences, maxlen=None, dtype='int32',
                   padding='pre', truncating='pre', value=0.):
     """Pads sequences to the same length.
-    This function transforms a list of
-    `num_samples` sequences (lists of integers)
-    into a 2D Numpy array of shape `(num_samples, num_timesteps)`.
-    `num_timesteps` is either the `maxlen` argument if provided,
-    or the length of the longest sequence otherwise.
-    Sequences that are shorter than `num_timesteps`
-    are padded with `value` at the end.
-    Sequences longer than `num_timesteps` are truncated
-    so that they fit the desired length.
-    The position where padding or truncation happens is determined by
-    the arguments `padding` and `truncating`, respectively.
-    Pre-padding is the default.
     # Arguments
         sequences: List of lists, where each element is a sequence.
         maxlen: Int, maximum length of all sequences.
@@ -150,26 +138,6 @@ class Tokenizer(object):
 
 
 class TreebankWordTokenizer(Tokenizer):
-    """
-    The Treebank tokenizer uses regular expressions to tokenize text as in Penn Treebank.
-    This is the method that is invoked by ``word_tokenize()``.  It assumes that the
-    text has already been segmented into sentences, e.g. using ``sent_tokenize()``.
-    This tokenizer performs the following steps:
-    - split standard contractions, e.g. ``don't`` -> ``do n't`` and ``they'll`` -> ``they 'll``
-    - treat most punctuation characters as separate tokens
-    - split off commas and single quotes, when followed by whitespace
-    - separate periods that appear at the end of line
-        >>> from nltk.tokenize import TreebankWordTokenizer
-        >>> s = '''Good muffins cost $3.88\\nin New York.  Please buy me\\ntwo of them.\\nThanks.'''
-        >>> TreebankWordTokenizer().tokenize(s)
-        ['Good', 'muffins', 'cost', '$', '3.88', 'in', 'New', 'York.', 'Please', 'buy', 'me', 'two', 'of', 'them.', 'Thanks', '.']
-        >>> s = "They'll save and invest more."
-        >>> TreebankWordTokenizer().tokenize(s)
-        ['They', "'ll", 'save', 'and', 'invest', 'more', '.']
-        >>> s = "hi, my name can't hello,"
-        >>> TreebankWordTokenizer().tokenize(s)
-        ['hi', ',', 'my', 'name', 'ca', "n't", 'hello', ',']
-    """
 
     # starting quotes
     STARTING_QUOTES = [
@@ -254,9 +222,5 @@ class TreebankWordTokenizer(Tokenizer):
         for regexp in self.CONTRACTIONS3:
             text = regexp.sub(r' \1 \2 ', text)
 
-        # We are not using CONTRACTIONS4 since
-        # they are also commented out in the SED scripts
-        # for regexp in self._contractions.CONTRACTIONS4:
-        #     text = regexp.sub(r' \1 \2 \3 ', text)
 
         return text.split()
