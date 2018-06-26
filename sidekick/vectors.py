@@ -134,7 +134,7 @@ class Vectors(object):
         else:
             indices = [self._index_dict[word] for word in vocab]
         matrix = self.matrix[indices]
-        return Embedding(matrix=matrix, vocab=vocab)
+        return Vectors(matrix=matrix, vocab=vocab)
 
     def get_keras_layer(self, trainable=False, **kwargs):
         """Creates a Keras embedding layer with the loaded vectors
@@ -214,4 +214,4 @@ class Vectors(object):
         matrix = np.concatenate([self.matrix, other.matrix], axis=0)
         vocab = self.vocab + other.vocab
 
-        return Embedding(matrix=matrix, vocab=vocab)
+        return Vectors(matrix=matrix, vocab=vocab)
