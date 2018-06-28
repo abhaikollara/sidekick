@@ -83,9 +83,9 @@ class Tokenizer(object):
         """
         self.token2idx = token2idx
         self.frozen = frozen
-        if frozen:
-            assert oov_idx is not None, "Assign a word index for out-of-vocabulary words"
-            self.oov_idx = oov_idx
+        self.oov_idx = oov_idx
+        if self.frozen:
+            assert self.oov_idx is not None, "Assign a word index for out-of-vocabulary words"
         self.idx = len(token2idx)
 
     def tokenize(self, token):
