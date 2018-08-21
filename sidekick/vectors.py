@@ -37,6 +37,7 @@ class Vectors(object):
             words.append('__ZERO__')
         if self.allow_oov:
             words.append('__OUT_OF_VOCAB__')
+            self.oov_index = len(words) - 1
 
         if binary:
             with open(path, 'rb') as f:
@@ -49,8 +50,8 @@ class Vectors(object):
                 self._matrix = np.zeros(
                     [num_vectors + len(words), vector_size], dtype='float32')
                 # Assign random vector for OOV token if it exists
-                if len(words) > 1:
-                    self._matrix[len(words)-1] = np.random.randn(vector_size, )
+                if self.allow_oov:
+                    self._matrix[self.oov_index] = np.random.randn(vector_size, )
 
                 update = words.append  # Speedup
                 for i in tqdm(range(len(words), num_vectors+len(words))):
@@ -101,11 +102,12 @@ class Vectors(object):
             words.append('__ZERO__')
         if self.allow_oov:
             words.append('__OUT_OF_VOCAB__')
+            self.oov_index = len(words) - 1
 
         self._matrix = np.zeros((vocab_size+len(words), dim))
         # Assign random vector for OOV token if it exists
-        if len(words) > 1:
-            self._matrix[len(words)-1] = np.random.randn(dim, )
+        if "__OUT_OF_VOCAB__" in words:
+            self._matrix[self.oov_index] = np.random.randn(dim, )
 
         update = words.append  # Speedup
         with open(path, 'r') as f:
@@ -128,9 +130,13 @@ class Vectors(object):
         if self.reserve_zero:
             vocab.insert(0, '__ZERO__')
         if self.allow_oov:
-            vocab.insert(1, '__OUT_OF_VOCAB__')
-            indices = [self._index_dict[word]
-                       if word in self.index_dict else 1 for word in vocab]
+            vocab.insert(self.oov_index, '__OUT_OF_VOCAB__')
+            indices = []
+            for word in vocab:
+                try:
+                    indices.append(self._index_dict[word])
+                except KeyError:
+                    indices.append(self.oov_index)
         else:
             indices = [self._index_dict[word] for word in vocab]
         matrix = self.matrix[indices]
