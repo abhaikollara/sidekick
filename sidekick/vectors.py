@@ -213,8 +213,12 @@ class Vectors(object):
     def __contains__(self, item):
         return item in self._index_dict
 
-    def __getitem__(self, idx):
-        return (self.vocab[idx], self.matrix[idx])
+    def __getitem__(self, word):
+        try:
+            idx = self.index_dict[word]
+            return self.matrix[idx]
+        except KeyError:
+            raise KeyError("\"{}\" not found in vocabulary".format(word))
 
     def __add__(self, other):
         matrix = np.concatenate([self.matrix, other.matrix], axis=0)
