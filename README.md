@@ -9,7 +9,7 @@ from sidekick.vectors import Vectors
 
 glove = Vectors()
 glove.load_glove("/Users/username/Downloads/glove.6B.50d.txt", reserve_zero=True, reserve_oov_token=True)
-
+# or glove.load_word2vec("...")
 100%|██████████| 400000/400000 [00:07<00:00, 56646.83it/s]
 ```
 
