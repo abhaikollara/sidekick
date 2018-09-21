@@ -12,6 +12,12 @@ glove.load_glove("/Users/username/Downloads/glove.6B.50d.txt", reserve_zero=True
 
 100%|██████████| 400000/400000 [00:07<00:00, 56646.83it/s]
 ```
+
+### Generate a Keras or PyTorch embedding layer
+```python
+glove.get_keras_layer(trainable=True)
+glove.get_pytorch_layer(trainable=True)
+```
 ### Get the vector of a word
 ```python
 glove["universe"]
@@ -21,15 +27,9 @@ glove["universe"]
 ```python
 glove.matrix
 ```
-
 ```python
 glove.matrix.shape
 (400002, 50) # 400000 words + 2 extra tokens for zero and out of vocab words
-```
-
-### Generate a Keras embedding layer
-```python
-glove.get_keras_layer(trainable=True)
 ```
 
 ### Create a subset of the vocab
